@@ -8,7 +8,6 @@ require 'sqlite3'
 require 'active_record'
 require 'active_record/base'
 require 'active_record/migration'
-require 'ruby-debug'
 
 ActiveRecord::Migration.verbose = false
 ActiveRecord::Base.establish_connection(

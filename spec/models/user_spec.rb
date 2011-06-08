@@ -126,14 +126,6 @@ describe "User" do
       @user.errors[:website].should be_empty
     end
 
-    it "should return correct data" do
-      @user.website = "website.com"
-      @user.url = "website.com/blog"
-      @user.should be_valid
-      @user.website.should == "http://website.com"
-      @user.url.should == "http://website.com/blog"
-    end
-
   end
 
   context "with ActiveRecord" do
@@ -195,37 +187,6 @@ describe "User" do
 
   end
 
-  context "check normalizing" do
-    before do
-      @user = User.new
-    end
-
-    it "should convert correctly http://website.com/~smith/" do
-      @user.website = "http://website.com/~smith/"
-      @user.website_normalized.should == "http://website.com/~smith/"
-    end
-
-    it "should convert correctly website.com" do
-      @user.website = "website.com"
-      @user.website_normalized.should == "website.com"
-    end
-
-    it "should be equivalent to リ宠퐱卄.com" do
-      @user.website = "リ宠퐱卄.com"
-      @user.website_normalized.should == "xn--eek174hoxfpr4k.com"
-    end
-
-    it "should be equivalent to www.詹姆斯.com" do
-      @user.website = "www.詹姆斯.com"
-      @user.website_normalized.should == "www.xn--8ws00zhy3a.com"
-    end
-
-    it "should convert 'www.Iñtërnâtiônàlizætiøn.com' correctly" do
-      @user.website = "www.Iñtërnâtiônàlizætiøn.com"
-      @user.website_normalized.should == "www.xn--itrntinliztin-vdb0a5exd8ewcye.com"
-    end
-  end
-
   context "when custom message is set" do
     before do
       @user = User.new
@@ -245,50 +206,6 @@ describe "User" do
     it "should show correct message" do
       @user.valid?
       @user.errors[:website].join.should == 'is not a valid URL'
-    end
-  end
-
-  context "automated preffilling prefix - preffill if didnt exists" do
-    before do
-      @user = User.new
-      @user.website = 'website.com'
-      @user_with_s = UserWithPrefferedSchema.new
-      @user_with_s.website = 'website.com'
-    end
-
-    it "should preffill http:// to url" do
-      @user.should be_valid
-      @user.website.start_with?('http://').should be_true
-    end
-
-    it "should preffill https:// to url" do
-      @user_with_s.should be_valid
-      @user_with_s.website.start_with?('https://').should be_true
-    end
-  end
-
-  context "automated preffilling prefix - dont preffill if exist" do
-    before do
-      @user = User.new
-      @user.website = 'http://website.com'
-      @user_with_s = UserWithPrefferedSchema.new
-      @user_with_s.website = 'https://website.com'
-    end
-
-    it "should not preffill http://" do
-      @user.should be_valid
-      @user.website.should == 'http://website.com'
-      @user.website = 'https://website.com'
-      @user.valid?
-      @user.website.should == 'https://website.com'
-    end
-
-    it "should not preffill https://" do
-      @user_with_s.should be_valid
-      @user_with_s.website.should == 'https://website.com'
-      @user_with_s.website = 'http://website.com'
-      @user.valid?
-      @user_with_s.website.should == 'http://website.com'
     end
   end
 

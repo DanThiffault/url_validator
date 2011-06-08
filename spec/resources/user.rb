@@ -3,6 +3,7 @@ class User
 
   attr_accessor :website
 
-  validates_url :website, :message => 'bad bad URL'
+  validates :website, :url => {:message => 'bad bad URL'}
+
 end
 
