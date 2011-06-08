@@ -2,6 +2,7 @@ require 'uri'
 require 'active_model'
 require 'addressable/uri'
 require 'ipaddr'
+require 'url_validator/tld_file_indexing'
 
 module ActiveModel
   module Validations
@@ -10,7 +11,7 @@ module ActiveModel
       def validate_each(record, attribute, value)
         message = options[:message] || "is not a valid URL"
         schemes = options[:schemes] || %w(http https)
-        url_regexp = /^((#{schemes.join('|')}):\/\/){0,1}[a-z0-9]+([a-z0-9\-\.]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/ix
+        custom_tlds = options[:custom_tlds]
         preffered_schema = options[:preffered_schema] || "#{schemes.first}://"
 
         if value.blank? && !(options[:allow_blank] || options[:allow_nil])
@@ -27,29 +28,50 @@ module ActiveModel
 
         begin
           uri = Addressable::URI.parse(prefixed_value)
+          uri.normalize!
         rescue Addressable::URI::InvalidURIError
           record.errors[attribute] << message
         end
 
         if uri
-          normalized_value = Addressable::IDNA.to_ascii(prefixed_value).to_s
-          begin
-            IPAddr.new uri.host
-            ip_based = true
-          rescue
-            ip_based = false
-          end
-
-          unless ip_based
-            unless url_regexp =~ normalized_value
-              record.errors[attribute] << message
+          if valid_host? uri.host
+            begin
+              IPAddr.new uri.host
+              ip_based = true
+            rescue
+              ip_based = false
             end
+
+            unless ip_based
+              if custom_tlds # Check against custom domain suffixes
+                ::UrlValidator::TldMatcher.instance.custom_tlds=custom_tlds
+              end
+
+#            Check domain against internet db
+              valid_tld = ::UrlValidator::TldMatcher.instance.tld_match? uri.host
+
+#            Ping website
+#              TODO: Ping the website if requested
+
+              unless valid_tld
+                record.errors[attribute] << message
+              end
+            end
+          else
+            record.errors[attribute] << message
           end
         end
 
 
       end
-
+      def valid_host?(host_name)
+#        TODO: check for other invalid host characters
+        if host_name && !host_name.include?(' ')
+          true
+        else
+          false
+        end
+      end
     end
 
     module ClassMethods

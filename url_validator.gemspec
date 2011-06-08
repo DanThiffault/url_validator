@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require "url_validator/version"
+require "url_validator/tld_file_indexing"
 
 Gem::Specification.new do |s|
   s.name        = "url_validator"
