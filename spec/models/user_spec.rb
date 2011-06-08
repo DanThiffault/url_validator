@@ -32,6 +32,11 @@ describe "User" do
       @user.should_not be_valid
     end
 
+    it "127.0.0.1/test should be valid" do
+      @user.website = '127.0.0.1/test'
+      @user.should be_valid
+    end
+
     it "www.website.c should not be valid" do
       @user.website = 'www.website.c'
       @user.should_not be_valid

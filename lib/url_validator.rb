@@ -1,6 +1,7 @@
 require 'uri'
 require 'active_model'
 require 'addressable/uri'
+require 'ipaddr'
 
 module ActiveModel
   module Validations
@@ -23,15 +24,30 @@ module ActiveModel
           prefixed_value = value
         end
 
-        normalized_value = Addressable::IDNA.to_ascii(prefixed_value).to_s
+
         begin
           uri = Addressable::URI.parse(prefixed_value)
-          unless url_regexp =~ normalized_value
-            record.errors[attribute] << message
-          end
         rescue Addressable::URI::InvalidURIError
           record.errors[attribute] << message
         end
+
+        if uri
+          normalized_value = Addressable::IDNA.to_ascii(prefixed_value).to_s
+          begin
+            IPAddr.new uri.host
+            ip_based = true
+          rescue
+            ip_based = false
+          end
+
+          unless ip_based
+            unless url_regexp =~ normalized_value
+              record.errors[attribute] << message
+            end
+          end
+        end
+
+
       end
 
     end
