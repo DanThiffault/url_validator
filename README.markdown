@@ -2,7 +2,7 @@
 
 ---
 
-URL validator makes possible check URI with different charset like: www.詹姆斯.com . For each setted variable to check, it generates the dynamic method called `variable_normalized`, which return internationalized format of URI. For exmaple `www.詹姆斯.com => www.xn--8ws00zhy3a.com`. This gem is using [addressable](http://github.com/sporkmonger/addressable) gem for internationalizing and beyond regexp for checking valid URI. See in spec kind of valid/invalid URI.
+URL validator makes possible check URI with different charset like: www.詹姆斯.com .  This gem is using [addressable](http://github.com/sporkmonger/addressable) gem for internationalizing. This gem checks to make sure a top level domain is being set. See in spec kind of valid/invalid URI.
 
 ## Installation ##
 
@@ -27,6 +27,13 @@ In your class:
       attr_accessor :website
       validates_url :website
 
+    end
+
+    or
+
+    class User
+      attr_accessor :website
+      validates :website, :url => true
     end
 
 Then somewhere in code:

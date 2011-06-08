@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.name        = "url_validator"
   s.version     = UrlValidator::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Zdenko Nevrala"]
-  s.email       = ["nevralaz@gmail.com"]
+  s.authors     = ["Zdenko Nevrala", "Dan Thifffault"]
+  s.email       = ["nevralaz@gmail.com", "dthiffault@gmail.com"]
   s.homepage    = "http://github.com/zdenal/url_validator"
   s.summary     = %q{URL validator}
   s.description = %q{URL validator with normalize URL from different charset}
